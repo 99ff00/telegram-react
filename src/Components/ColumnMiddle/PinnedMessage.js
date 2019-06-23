@@ -152,6 +152,11 @@ class PinnedMessage extends React.Component {
     };
 
     handleDelete = event => {
+        TdLibController.send({
+            '@type': 'unpinChatMessage',
+            chat_id: this.props.chatId
+        });
+
         event.preventDefault();
         event.stopPropagation();
     };
@@ -162,14 +167,10 @@ class PinnedMessage extends React.Component {
 
         const message = MessageStore.get(chatId, messageId);
         //console.log('PinnedMessage.message', chatId, messageId, message);
-        if (!message) return null;
+        if (!message || isDeletedMessage(message)) return null;
 
         let content = !message ? t('Loading') : getContent(message, t);
         const photoSize = getReplyPhotoSize(chatId, messageId);
-
-        if (isDeletedMessage(message)) {
-            content = t('DeletedMessage');
-        }
 
         return (
             <div
